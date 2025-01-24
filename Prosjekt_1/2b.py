@@ -4,35 +4,34 @@ import matplotlib.pyplot as plt
 
 # Define the slot machine payout probabilities and rewards
 payouts = {
-    "BAR/BAR/BAR": (1 / 64, 20),
-    "BELL/BELL/BELL": (1 / 64, 15),
-    "LEMON/LEMON/LEMON": (1 / 64, 5),
-    "CHERRY/CHERRY/CHERRY": (1 / 64, 3),
-    "CHERRY/CHERRY/?": (3 / 64, 2),
-    "CHERRY/?/?": (9 / 64, 1),
+    "Br/Br/Br": (1 / 64, 20),
+    "Bl/Bl/Bl": (1 / 64, 15),
+    "L/L/L":    (1 / 64, 5),
+    "C/C/C":    (1 / 64, 3),
+    "C/C/?":    (3 / 64, 2),
+    "C/?/?":    (9 / 64, 1),
 }
 
 # Simulate the slot machine
-def simulate_slot_machine(initial_coins, simulations):
+def simulate_slot_machine(initial_coins, max_simulations):
     results = []
+    coins = initial_coins
+    plays = 0
 
-    for _ in range(simulations):
-        coins = initial_coins
-        plays = 0
+    while(plays < max_simulations and coins > 0):
+        coins -= 1  # Costs 1 coin per spin
+        plays += 1 
 
-        while coins > 0:
-            coins -= 1  # Deduct 1 coin per play
-            plays += 1
+        # Simulate the slot machine
+        spin = random.random()
+        cumulative_probability = 0
 
-            # Simulate the slot machine
-            spin = random.random()
-            cumulative_probability = 0
-
-            for outcome, (probability, reward) in payouts.items():
-                cumulative_probability += probability
-                if spin <= cumulative_probability:
-                    coins += reward
-                    break
+        # We check if we get any of the rewards
+        for outcome, (probability, reward) in payouts.items():
+            cumulative_probability += probability
+            if spin <= cumulative_probability:
+                coins += reward
+                break
 
         results.append(plays)
 
@@ -40,10 +39,10 @@ def simulate_slot_machine(initial_coins, simulations):
 
 # Parameters
 initial_coins = 10
-simulations = 10000
+max_simulations = 10000
 
 # Run the simulation
-results = simulate_slot_machine(initial_coins, simulations)
+results = simulate_slot_machine(initial_coins, max_simulations)
 
 # Calculate mean and median
 mean_plays = np.mean(results)
