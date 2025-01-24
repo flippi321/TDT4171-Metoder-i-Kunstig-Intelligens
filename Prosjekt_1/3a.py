@@ -14,6 +14,41 @@ def birthday_simulation(N, runs=10000):
     # Probability of at least one duplicate
     return successes / runs
 
+# Find the smallest N where the probability is a given probability
+def find_smallest_N(target_probability=0.5, runs=10000):
+    N = 1
+    max_runs = 10000
+
+    # We just use N as a shortcut to count runs too
+    while N <= max_runs:
+        prob = birthday_simulation(N, runs)
+        if prob >= target_probability:
+            return N, prob
+        N += 1
+
+
+# Used only for task b
+def probabilities_in_range(start=10, end=50, target_probability=0.5, trials=10000):
+    probabilities = []
+    for N in range(start, end + 1):
+        prob = birthday_simulation(N, trials)
+        probabilities.append((N, prob))
+
+    # Find proportion where probability >= target_probability
+    count_above_threshold = sum(1 for _, prob in probabilities if prob >= target_probability)
+    proportion = count_above_threshold / (end - start + 1)
+
+    return probabilities, proportion
+
+
 # Task 3.1
-# We want to simulate the chance of 10 people having the same birthday
-print("The chance of 10 people sharing the same birthday is", birthday_simulation(10)) 
+# We want to find the smallest number of people, N, where probability of two sharing a birthday is >= 50%
+smallest_N, probability_at_smallest_N = find_smallest_N()
+print(f"The smallest N where the probability of at least two people sharing a birthday is at least 50% is: {smallest_N} (Probability: {probability_at_smallest_N:.4f})")
+
+# Task (b): Compute probabilities and proportion for N in [10, 50]
+results, proportion = probabilities_in_range()
+for N, prob in results:
+    print(f"N = {N}, Probability = {prob:.4f}")
+
+print(f"Proportion of N in [10, 50] with probability >= 50%: {proportion:.4f}")
