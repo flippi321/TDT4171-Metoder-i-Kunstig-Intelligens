@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.stats import gaussian_kde
 
 # Define the slot machine payout probabilities and rewards
 payouts = {
@@ -54,14 +55,17 @@ median_plays = np.median(results)
 print(f"Mean plays until broke: {mean_plays}")
 print(f"Median plays until broke: {median_plays}")
 
-# Plotting the results
+# Plot results as a kde
 plt.figure(figsize=(10, 6))
-plt.hist(results, bins=30, color="skyblue", edgecolor="black", alpha=0.7, density=True)
+kde = gaussian_kde(results)
+x_values = np.linspace(min(results), max(results), 500)
+y_values = kde(x_values)
+plt.plot(x_values, y_values, color="blue", label="Distribution (KDE)", linewidth=2)
 plt.axvline(mean_plays, color="red", linestyle="dashed", linewidth=1.5, label=f"Mean: {mean_plays:.2f}")
 plt.axvline(median_plays, color="green", linestyle="dashed", linewidth=1.5, label=f"Median: {median_plays:.2f}")
-plt.title("Distribution of Plays Until Broke", fontsize=16)
+plt.title("Distribution of Plays Until Broke (KDE)", fontsize=16)
 plt.xlabel("Number of Plays", fontsize=14)
-plt.ylabel("Probability Density", fontsize=14)
+plt.ylabel("Density", fontsize=14)
 plt.legend(fontsize=12)
 plt.grid(alpha=0.3)
 plt.show()
