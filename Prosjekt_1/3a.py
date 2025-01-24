@@ -49,8 +49,6 @@ print(f"The smallest N where the probability of at least two people sharing a bi
 results, proportion = probabilities_in_range()
 
 # Print the results
-for N, prob in results:
-    print(f"N = {N}, Probability = {prob:.4f}")
 print(f"Proportion of N in [10, 50] with probability >= 50%: {proportion:.4f}")
 
 # Plot the probabilities
