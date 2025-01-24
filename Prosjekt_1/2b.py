@@ -13,25 +13,27 @@ payouts = {
 }
 
 # Simulate the slot machine
-def simulate_slot_machine(initial_coins, max_simulations):
+def simulate_slot_machine(initial_coins, simulations):
     results = []
-    coins = initial_coins
-    plays = 0
 
-    while(plays < max_simulations and coins > 0):
-        coins -= 1  # Costs 1 coin per spin
-        plays += 1 
+    for _ in range(simulations):
+        coins = initial_coins
+        plays = 0
 
-        # Simulate the slot machine
-        spin = random.random()
-        cumulative_probability = 0
+        while coins > 0:
+            coins -= 1  # Deduct 1 coin per play
+            plays += 1
 
-        # We check if we get any of the rewards
-        for outcome, (probability, reward) in payouts.items():
-            cumulative_probability += probability
-            if spin <= cumulative_probability:
-                coins += reward
-                break
+            # Simulate the slot machine
+            spin = random.random()
+            cumulative_probability = 0
+
+            # We check if we get any of the rewards
+            for outcome, (probability, reward) in payouts.items():
+                cumulative_probability += probability
+                if spin <= cumulative_probability:
+                    coins += reward
+                    break
 
         results.append(plays)
 
@@ -39,10 +41,10 @@ def simulate_slot_machine(initial_coins, max_simulations):
 
 # Parameters
 initial_coins = 10
-max_simulations = 10000
+simulations = 10000
 
 # Run the simulation
-results = simulate_slot_machine(initial_coins, max_simulations)
+results = simulate_slot_machine(initial_coins, simulations)
 
 # Calculate mean and median
 mean_plays = np.mean(results)
