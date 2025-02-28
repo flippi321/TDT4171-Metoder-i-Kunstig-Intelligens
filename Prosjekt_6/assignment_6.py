@@ -56,8 +56,8 @@ def build_model(cnn=True):
 if __name__ == "__main__":
 
     # TODO try different values for epochs and learning_rate to improve model performance
-    epochs = 1
-    learning_rate = 2.0
+    epochs = 20
+    learning_rate = 0.1
 
     x_train, y_train, x_test, y_test = load_mnist()
     model = build_model(cnn=False)  # set cnn=True for convolutional network, false for MLP
