@@ -60,18 +60,20 @@ if __name__ == "__main__":
     learning_rate = 0.1
 
     x_train, y_train, x_test, y_test = load_mnist()
-    model = build_model(cnn=False)  # set cnn=True for convolutional network, false for MLP
+    
+    for cnn_value in [False, True]:
+        model = build_model(cnn=cnn_value)  # set cnn=True for convolutional network, false for MLP
 
-    # Compile model - Stochastic gradient descent is chosen for the optimizer and categorical cross entropy for the
-    # loss calculation
-    optimizer = keras.optimizers.SGD(learning_rate=learning_rate)
-    model.compile(optimizer=optimizer, loss="categorical_crossentropy", metrics=['accuracy'])
+        # Compile model - Stochastic gradient descent is chosen for the optimizer and categorical cross entropy for the
+        # loss calculation
+        optimizer = keras.optimizers.SGD(learning_rate=learning_rate)
+        model.compile(optimizer=optimizer, loss="categorical_crossentropy", metrics=['accuracy'])
 
-    # Show model architecture details and compare parameter counts
-    model.summary()
+        # Show model architecture details and compare parameter counts
+        model.summary()
 
-    # Train the model on training data
-    history = model.fit(x_train, y_train, epochs=epochs, batch_size=128, verbose=1, validation_split=0.1)
+        # Train the model on training data
+        history = model.fit(x_train, y_train, epochs=epochs, batch_size=128, verbose=1, validation_split=0.1)
 
-    # Evaluate the model on test data
-    test_loss, test_acc = model.evaluate(x_test, y_test, verbose=1)
+        # Evaluate the model on test data
+        test_loss, test_acc = model.evaluate(x_test, y_test, verbose=1)
