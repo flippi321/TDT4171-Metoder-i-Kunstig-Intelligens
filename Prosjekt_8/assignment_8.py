@@ -79,8 +79,7 @@ def feed_forward(x, hidden_W, hidden_b, out_W, out_b):
     """
 
     # Hidden layer calculations
-    # TODO implement the forward pass through the hidden layer
-    hidden_activations = x
+    hidden_activations = x @ hidden_W + hidden_b
 
     # Output calculations
     out_linear = hidden_activations @ out_W + out_b
@@ -177,7 +176,7 @@ if __name__ == "__main__":
     # This is the neural net
     neural_net = (hidden_weights, hidden_bias, out_weights, out_bias)
     # Training
-    train_mse, neural_net_trained = train(X_train, y_train, neural_net, learning_rate=0.05, epochs=40,
+    train_mse, neural_net_trained = train(X_train, y_train, neural_net, learning_rate=0.05, epochs=2,
                                           batch_size=1)
 
     # Calculate mse on test data
