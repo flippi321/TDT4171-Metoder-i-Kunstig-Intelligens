@@ -41,7 +41,7 @@ def sigmoid(x):
     Sigmoid activation function
     """
     # TODO implement sigmoid activation function
-    return x
+    return 1 / (1+np.exp(-x))
 
 
 def d_sigmoid(y):
