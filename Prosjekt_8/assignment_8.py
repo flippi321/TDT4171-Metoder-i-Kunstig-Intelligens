@@ -40,7 +40,6 @@ def sigmoid(x):
     """
     Sigmoid activation function
     """
-    # TODO implement sigmoid activation function
     return 1 / (1+np.exp(-x))
 
 
@@ -48,7 +47,6 @@ def d_sigmoid(y):
     """
     Derivative of the sigmoid activation function - input y is output of sigmoid(x)
     """
-    # TODO implement derivative of sigmoid activation function
     return sigmoid(y)*(1-sigmoid(y))
 
 
