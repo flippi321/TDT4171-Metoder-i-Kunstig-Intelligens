@@ -49,7 +49,7 @@ def d_sigmoid(y):
     Derivative of the sigmoid activation function - input y is output of sigmoid(x)
     """
     # TODO implement derivative of sigmoid activation function
-    return y
+    return sigmoid(y)*(1-sigmoid(y))
 
 
 def linear(x):
