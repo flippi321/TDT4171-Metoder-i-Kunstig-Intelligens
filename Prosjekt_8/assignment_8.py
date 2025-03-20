@@ -101,56 +101,52 @@ def backward(y_hat, y, hidden_activations, x, out_W):
 
     """
 
-    # TODO implement backpropagation
-
-    # gradients wrt output weights
-    d_L_d_ow = 0  # Size (2,1)
-    # gradients wrt output bias
-    d_L_d_ob = 0  # Size (1,)
-    # gradients wrt hidden weights
-    d_L_d_hw = 0  # Size (2,2)
-    # gradients wrt hidden bias
-    d_L_d_hb = 0  # Size (2,)
-
+    # Compute the loss gradient w.r.t. output layer
+    d_L_d_yhat = -2 * (y - y_hat)  # (batch_size, 1)
+    
+    # Compute gradients for output layer weights and bias
+    d_L_d_ow = hidden_activations.T @ d_L_d_yhat  # (2,1)
+    d_L_d_ob = np.sum(d_L_d_yhat, axis=0)  # (1,)
+    
+    # Compute gradients for hidden layer
+    d_hidden = d_L_d_yhat @ out_W.T * d_sigmoid(hidden_activations)  # (batch_size, 2)
+    
+    d_L_d_hw = x.T @ d_hidden  # (2,2)
+    d_L_d_hb = np.sum(d_hidden, axis=0)  # (2,)
+    
     return d_L_d_hw, d_L_d_hb, d_L_d_ow, d_L_d_ob
+
 
 
 def train(x_train, y_train, neural_net, learning_rate=0.01, epochs=10, batch_size=1):
     """
     Train neural network on data
     """
-
     hidden_W, hidden_b, out_W, out_b = neural_net
-
-    n_batches = int(np.ceil(x_train.shape[0]/float(batch_size)))
+    n_batches = int(np.ceil(x_train.shape[0] / float(batch_size)))
 
     for e in range(epochs):
-
         errors = []
         learning_rate *= 0.99
         for i in range(n_batches):
+            batch_x = x_train[batch_size * i : batch_size * (i + 1)]
+            batch_y = y_train[batch_size * i : batch_size * (i + 1)]
 
             # Forward pass
-            y_hat, hidden_activations = feed_forward(x_train[batch_size*i:batch_size*(i+1)],
-                                                     hidden_W, hidden_b, out_W, out_b)
+            y_hat, hidden_activations = feed_forward(batch_x, hidden_W, hidden_b, out_W, out_b)
+            
             # Compute error
-            error = mse(y_train[batch_size*i:batch_size*(i+1)], y_hat)
+            error = mse(batch_y, y_hat)
             errors.append(error)
 
             # Backward pass
-            d_L_d_hw, d_L_d_hb, d_L_d_ow, d_L_d_ob = backward(y_hat,
-                                                              y_train[batch_size*i:batch_size*(i+1)],
-                                                              x_train[batch_size*i:batch_size*(i+1)],
-                                                              hidden_activations, out_W)
+            d_L_d_hw, d_L_d_hb, d_L_d_ow, d_L_d_ob = backward(y_hat, batch_y, hidden_activations, batch_x, out_W)
 
             # Update parameters
-            # TODO update parameters using gradients returned above and learning rate
-            hidden_W = hidden_W
-            hidden_b = hidden_b
-            out_W = out_W
-            out_b = out_b
-
-        print(f"Epoch {e+1}: mse {np.mean(errors):4f}", end="\n")
+            hidden_W -= learning_rate * d_L_d_hw
+            hidden_b -= learning_rate * d_L_d_hb
+            out_W -= learning_rate * d_L_d_ow
+            out_b -= learning_rate * d_L_d_ob
 
     return np.mean(errors), (hidden_W, hidden_b, out_W, out_b)
 
@@ -174,8 +170,7 @@ if __name__ == "__main__":
     # This is the neural net
     neural_net = (hidden_weights, hidden_bias, out_weights, out_bias)
     # Training
-    train_mse, neural_net_trained = train(X_train, y_train, neural_net, learning_rate=0.05, epochs=2,
-                                          batch_size=1)
+    train_mse, neural_net_trained = train(X_train, y_train, neural_net, learning_rate=0.1, epochs=100, batch_size=10)
 
     # Calculate mse on test data
     y_hat_test, _ = feed_forward(X_test, *neural_net_trained)
