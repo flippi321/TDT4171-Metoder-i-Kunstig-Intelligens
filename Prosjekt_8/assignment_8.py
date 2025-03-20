@@ -47,7 +47,7 @@ def d_sigmoid(y):
     """
     Derivative of the sigmoid activation function - input y is output of sigmoid(x)
     """
-    return sigmoid(y)*(1-sigmoid(y))
+    return y*(1-y)
 
 
 def linear(x):
@@ -77,7 +77,7 @@ def feed_forward(x, hidden_W, hidden_b, out_W, out_b):
     """
 
     # Hidden layer calculations
-    hidden_activations = x @ hidden_W + hidden_b
+    hidden_activations = sigmoid(x @ hidden_W + hidden_b)
 
     # Output calculations
     out_linear = hidden_activations @ out_W + out_b
@@ -170,7 +170,7 @@ if __name__ == "__main__":
     # This is the neural net
     neural_net = (hidden_weights, hidden_bias, out_weights, out_bias)
     # Training
-    train_mse, neural_net_trained = train(X_train, y_train, neural_net, learning_rate=0.1, epochs=100, batch_size=10)
+    train_mse, neural_net_trained = train(X_train, y_train, neural_net, learning_rate=5e-2, epochs=1000, batch_size=10)
 
     # Calculate mse on test data
     y_hat_test, _ = feed_forward(X_test, *neural_net_trained)
