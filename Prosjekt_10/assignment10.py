@@ -1,19 +1,26 @@
 import pickle
 from typing import Dict, List, Any, Union
 import numpy as np
-# Keras
+import tensorflow as tf
 from tensorflow import keras
 from keras.utils import pad_sequences
+from keras.models import Sequential
+from keras.layers import Embedding, Flatten, Dense, LSTM, BatchNormalization, Dropout, LeakyReLU
 
-
+# Ensure TensorFlow uses GPU if available
+gpu_devices = tf.config.list_physical_devices('GPU')
+if gpu_devices:
+    for device in gpu_devices:
+        tf.config.experimental.set_memory_growth(device, True)
+    print("GPU is available and will be used.")
+else:
+    print("No GPU found. Running on CPU.")
 
 def load_data() -> Dict[str, Union[List[Any], int]]:
     path = "keras-data.pickle"
     with open(file=path, mode="rb") as file:
         data = pickle.load(file)
-
     return data
-
 
 def preprocess_data(data: Dict[str, Union[List[Any], int]]) -> Dict[str, Union[List[Any], np.ndarray, int]]:
     """
@@ -28,8 +35,7 @@ def preprocess_data(data: Dict[str, Union[List[Any], int]]) -> Dict[str, Union[L
 
     return data
 
-
-def train_model(data: Dict[str, Union[List[Any], np.ndarray, int]], model_type="feedforward") -> float:
+def train_model(data: Dict[str, Union[List[Any], np.ndarray, int]], model_type="feedforward", lr=1e-3, epochs = 1) -> float:
     """
     Build a neural network of type model_type and train the model on the data.
     Evaluate the accuracy of the model on test data.
@@ -39,16 +45,42 @@ def train_model(data: Dict[str, Union[List[Any], np.ndarray, int]], model_type="
                         or "recurrent" for recurrent network
     :return: The accuracy of the model on test data
     """
+    vocab_size = data["vocab_size"]
+    embedding_dim = 128
+    maxlen = data["x_train"].shape[1]
 
-    # TODO build the model given model_type, train it on (data["x_train"], data["y_train"])
-    #  and evaluate its accuracy on (data["x_test"], data["y_test"]). Return the accuracy
+    model = Sequential()
+    model.add(Embedding(input_dim=vocab_size, output_dim=embedding_dim, input_length=maxlen))
 
-    pass
+    if model_type == "feedforward":
+        model.add(Flatten())
+        model.add(Dense(256, kernel_initializer="he_normal"))
+        model.add(LeakyReLU(negative_slope=0.1))
+        model.add(BatchNormalization())
+        model.add(Dropout(0.3))
 
+        model.add(Dense(128, kernel_initializer="he_normal"))
+        model.add(LeakyReLU(negative_slope=0.1))
+        model.add(BatchNormalization())
+        model.add(Dropout(0.3))
 
+        model.add(Dense(64, activation=tf.keras.activations.swish, kernel_initializer="he_normal"))
+        model.add(Dense(32, activation='relu'))
+        model.add(Dense(16, activation='relu'))
+    elif model_type == "recurrent":
+        model.add(LSTM(128, return_sequences=False))
+        model.add(Dense(64, activation='relu'))
+    else:
+        raise ValueError("Invalid model_type. Choose 'feedforward' or 'recurrent'.")
 
+    model.add(Dense(1, activation='sigmoid'))
+    optim = keras.optimizers.Adam(learning_rate=lr)
+    model.compile(optimizer=optim, loss='binary_crossentropy', metrics=['accuracy'])
 
+    model.fit(data["x_train"], data["y_train"], epochs=epochs, validation_split=0.2, verbose=1)
 
+    loss, accuracy = model.evaluate(data["x_test"], data["y_test"], verbose=0)
+    return accuracy
 
 def main() -> None:
     print("1. Loading data...")
@@ -68,4 +100,3 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
-
