@@ -7,3 +7,5 @@ env = gym.make("FrozenLake-v1", map_name="4x4", is_slippery=True)
 model = DQN("MlpPolicy", env, verbose=1, exploration_fraction=0.1)
 
 mean_rewards, _ = evaluate_policy(model, model.get_env(), n_eval_episodes=100)
+
+print(mean_rewards)
